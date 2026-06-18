@@ -1,0 +1,16 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/ai/describe/route": "app/api/ai/describe/route.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/dashboard/analytics/page": "app/dashboard/analytics/page.js",
+  "/dashboard/import/page": "app/dashboard/import/page.js",
+  "/dashboard/menu/page": "app/dashboard/menu/page.js",
+  "/dashboard/orders/page": "app/dashboard/orders/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/qr/page": "app/dashboard/qr/page.js",
+  "/dashboard/settings/page": "app/dashboard/settings/page.js",
+  "/menu/[restaurantId]/page": "app/menu/[restaurantId]/page.js",
+  "/scan/[restaurantId]/page": "app/scan/[restaurantId]/page.js",
+  "/page": "app/page.js",
+  "/signin/page": "app/signin/page.js"
+}
