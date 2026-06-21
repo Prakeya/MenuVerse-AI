@@ -1,108 +1,73 @@
 'use client'
 
-import React, { useState } from 'react'
-import Button from '../../../components/ui/Button'
-import Card from '../../../components/ui/Card'
-import { motion, AnimatePresence } from 'framer-motion'
-
-const steps = [
-  { key: 'upload', label: 'Uploading Menu...' },
-  { key: 'analyze', label: 'Analyzing Menu...' },
-  { key: 'extract', label: 'Extracting Dishes...' },
-  { key: 'describe', label: 'Generating Descriptions...' },
-  { key: 'create', label: 'Creating Menu...' },
-  { key: 'done', label: 'Complete!' }
-]
+import { useState } from 'react'
 
 export default function ImportPage() {
-  const [uploading, setUploading] = useState(false)
-  const [currentStep, setCurrentStep] = useState<number>(-1)
+  const [text, setText] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  async function handleUpload() {
-    setUploading(true)
-    setCurrentStep(0)
+  const loadExample = () => {
+    setText(`STARTERS
+Spring Rolls - $8.99
+Chicken Wings - $12.99
 
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise((res) => setTimeout(res, 900))
-      setCurrentStep(i + 1)
-    }
+MAINS
+Butter Chicken - $18.99
+Margherita Pizza - $14.99
+Truffle Burger - $16.99
 
-    setUploading(false)
-    setTimeout(() => setCurrentStep(-1), 500)
+DESSERTS
+Chocolate Lava Cake - $9.99
+
+DRINKS
+Mango Lassi - $4.99`)
   }
 
   return (
-    <section className="space-y-8 py-6">
-      <div className="space-y-2">
-        <p className="text-sm uppercase tracking-[0.2em] text-muted">AI import</p>
-        <h2 className="text-3xl font-semibold text-primary">Turn menus into ready-to-publish dishes</h2>
-        <p className="max-w-2xl text-sm leading-6 text-muted">Upload a menu image or PDF and let the AI extract, describe, and organize dishes automatically.</p>
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fef3c7', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 600, color: '#92400e', marginBottom: 8 }}>
+          ✦ AI FEATURE
+        </div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a1a', margin: 0 }}>Magic Menu Import</h1>
+        <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>Paste or upload your existing menu — our AI extracts every dish instantly.</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 p-8">
-          {currentStep === -1 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="group cursor-pointer rounded-[28px] border border-dashed border-border bg-slate-50 p-16 text-center transition hover:border-accent/60"
-            >
-              <div className="text-6xl mb-4">📸</div>
-              <div className="text-xl font-semibold text-primary mb-2">Drag & drop your menu</div>
-              <p className="text-sm text-muted mb-6">JPG, PNG, or PDF up to 10MB</p>
-              <Button onClick={handleUpload}>Upload menu</Button>
-            </motion.div>
-          ) : currentStep < steps.length ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-              {steps.map((step, idx) => (
-                <motion.div
-                  key={step.key}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.08 }}
-                  className="flex items-center gap-4 rounded-[24px] border border-border bg-white px-4 py-4"
-                >
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${
-                      idx < currentStep ? 'bg-primary text-black' : idx === currentStep ? 'bg-accent text-black' : 'bg-slate-100 text-muted'
-                    }`}
-                  >
-                    {idx < currentStep ? '✓' : idx + 1}
-                  </div>
-                  <div>
-                    <div className={idx <= currentStep ? 'text-primary font-semibold' : 'text-muted'}>{step.label}</div>
-                  </div>
-                </motion.div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>Paste your menu text</label>
+            <button onClick={loadExample} style={{ background: 'none', border: 'none', color: '#F5A623', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>Load example</button>
+          </div>
+          <textarea value={text} onChange={e => setText(e.target.value)} placeholder="STARTERS&#10;Dish Name - $Price&#10;&#10;MAINS&#10;Dish Name - $Price" style={{ width: '100%', height: 300, padding: 16, borderRadius: 16, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none', resize: 'none', fontFamily: 'monospace', lineHeight: 1.8 }} />
+
+          <div style={{ marginTop: 16, border: '2px dashed #e5e7eb', borderRadius: 16, padding: 32, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', background: '#f9fafb' }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>Drop a .txt or .csv file</div>
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>or click to browse</div>
+          </div>
+
+          <button onClick={() => { if (text.trim()) setLoading(true) }} style={{ marginTop: 16, width: '100%', padding: '14px', borderRadius: 999, border: 'none', background: text.trim() ? '#111' : '#e5e7eb', color: text.trim() ? 'white' : '#9ca3af', fontSize: 15, fontWeight: 700, cursor: text.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            ✦ Import Menu with AI
+          </button>
+        </div>
+
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', marginBottom: 16 }}>Import Log</div>
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {['Reading menu...', 'Identifying dishes...', 'Generating descriptions...', 'Creating entries...'].map((step, i) => (
+                <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f9fafb', borderRadius: 10 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid #F5A623', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#F5A623' }}>{i + 1}</div>
+                  <span style={{ fontSize: 13, color: '#1a1a1a' }}>{step}</span>
+                </div>
               ))}
-            </motion.div>
+            </div>
           ) : (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="rounded-[28px] bg-slate-50 p-10 text-center">
-              <div className="text-5xl mb-4">✨</div>
-              <div className="text-xl font-semibold text-primary mb-2">Menu imported successfully</div>
-              <p className="text-sm text-muted mb-6">12 dishes were extracted and are ready to publish.</p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Button variant="ghost" onClick={() => setCurrentStep(-1)}>
-                  Import another
-                </Button>
-                <Button onClick={() => (window.location.href = '/dashboard/menu')}>View menu</Button>
-              </div>
-            </motion.div>
+            <div style={{ padding: 32, textAlign: 'center', color: '#6b7280', fontSize: 13 }}>Import something to see the log</div>
           )}
-        </Card>
-
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4">
-          {[
-            { title: 'Fast results', subtitle: 'Extract menus in seconds' },
-            { title: 'AI smart labels', subtitle: 'Dish categories created automatically' },
-            { title: 'Live updates', subtitle: 'Changes appear instantly in the customer menu' }
-          ].map((item) => (
-            <Card key={item.title} className="p-6">
-              <div className="text-sm font-semibold text-primary mb-2">{item.title}</div>
-              <p className="text-sm text-muted">{item.subtitle}</p>
-            </Card>
-          ))}
-        </motion.div>
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

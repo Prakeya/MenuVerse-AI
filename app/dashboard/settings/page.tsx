@@ -1,52 +1,61 @@
 'use client'
 
-import React, { useState } from 'react'
-import Card from '../../../components/ui/Card'
-import Button from '../../../components/ui/Button'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { LANGUAGES } from '../../../lib/mockData'
 
 export default function SettingsPage() {
+  const [form, setForm] = useState({ name: 'The Golden Fork', phone: '+1 555-0100', address: '123 Main Street, New York, NY', cuisine: 'Indian', currency: 'USD ($)' })
   const [saved, setSaved] = useState(false)
-  const [form, setForm] = useState({ name: 'Demo Restaurant', address: '123 Main St', phone: '555-0100' })
 
-  async function save() {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
+  const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000) }
 
   return (
-    <section className="space-y-8 py-6">
-      <div className="space-y-2">
-        <p className="text-sm uppercase tracking-[0.2em] text-muted">Business settings</p>
-        <h2 className="text-3xl font-semibold text-primary">Restaurant profile</h2>
-        <p className="max-w-2xl text-sm leading-6 text-muted">Update your restaurant details, branding, and customer-facing contact info.</p>
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a1a', margin: 0 }}>Settings</h1>
+        <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>Manage your restaurant profile and preferences.</p>
       </div>
-
-      <Card className="max-w-2xl space-y-6 p-8">
-        <div className="grid gap-6">
+      <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 24, maxWidth: 600 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', margin: '0 0 16px' }}>Restaurant Profile</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {[
-            { label: 'Restaurant Name', value: form.name, key: 'name' },
-            { label: 'Address', value: form.address, key: 'address' },
-            { label: 'Phone Number', value: form.phone, key: 'phone' }
-          ].map((field) => (
-            <div key={field.key} className="space-y-2">
-              <label className="block text-sm font-medium text-primary">{field.label}</label>
-              <input
-                value={field.value}
-                onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                className="input-base w-full px-4 py-3"
-              />
+            { label: 'Restaurant Name', key: 'name' as const },
+            { label: 'Phone Number', key: 'phone' as const },
+          ].map(f => (
+            <div key={f.key}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>{f.label}</label>
+              <input value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none' }} />
             </div>
           ))}
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>Address</label>
+            <input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>Cuisine Type</label>
+            <input value={form.cuisine} onChange={e => setForm({ ...form, cuisine: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none' }} />
+          </div>
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>Currency</label>
+            <select value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })} style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none', background: 'white' }}>
+              <option>USD ($)</option><option>EUR (€)</option><option>GBP (£)</option><option>INR (₹)</option>
+            </select>
+          </div>
         </div>
-
-        <motion.div layout className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-          <Button variant="ghost" onClick={() => setForm({ ...form, name: 'Demo Restaurant', address: '123 Main St', phone: '555-0100' })}>
-            Reset
-          </Button>
-          <Button onClick={save}>{saved ? 'Saved' : 'Save changes'}</Button>
-        </motion.div>
-      </Card>
-    </section>
+        <div style={{ marginTop: 24 }}>
+          <h4 style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', margin: '0 0 12px' }}>Language & Translation</h4>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {LANGUAGES.map(l => (
+              <label key={l.code} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer' }}>
+                <input type="checkbox" defaultChecked={l.code === 'en'} style={{ accentColor: '#F5A623' }} /> {l.name}
+              </label>
+            ))}
+          </div>
+        </div>
+        <button onClick={save} style={{ marginTop: 24, padding: '12px 32px', borderRadius: 999, border: 'none', background: '#111', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+          {saved ? 'Saved ✓' : 'Save Changes'}
+        </button>
+      </div>
+    </div>
   )
 }

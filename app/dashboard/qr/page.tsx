@@ -1,56 +1,80 @@
 'use client'
 
-import React from 'react'
-import Card from '../../../components/ui/Card'
-import Button from '../../../components/ui/Button'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { Copy, Download, Printer, Share2, Check } from 'lucide-react'
+
+const TABLE_QR = Array.from({ length: 8 }, (_, i) => ({ id: `T-${i + 1}`, url: `https://menuverse.ai/menu/demo?table=T-${i + 1}` }))
 
 export default function QRPage() {
+  const [copied, setCopied] = useState<string | null>(null)
+
+  const copy = (url: string, id: string) => {
+    navigator.clipboard.writeText(url)
+    setCopied(id)
+    setTimeout(() => setCopied(null), 1500)
+  }
+
   return (
-    <section className="space-y-8 py-6">
-      <div className="space-y-2">
-        <p className="text-sm uppercase tracking-[0.2em] text-muted">QR insights</p>
-        <h2 className="text-3xl font-semibold text-primary">Share your menu with customers instantly</h2>
-        <p className="max-w-2xl text-sm leading-6 text-muted">Generate a modern QR code, share the live menu link, and track engagement from a single place.</p>
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: '1px solid rgba(245,166,35,0.4)', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 600, color: '#92400e', marginBottom: 8 }}>
+          DINER ACCESS
+        </div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a1a', margin: 0 }}>QR Menu Code</h1>
+        <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>Print this code on table tents or share the link — diners scan and order instantly.</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="p-8">
-            <div className="mb-6 rounded-[28px] bg-slate-50 p-8 text-center">
-              <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-[24px] bg-white shadow-soft">
-                <span className="text-2xl font-semibold tracking-[0.2em] text-slate-500">QR</span>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
+        {/* QR Preview */}
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 24, textAlign: 'center' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', marginBottom: 4 }}>MenuVerse AI</div>
+          <div style={{ width: 180, height: 180, background: '#f3f4f6', margin: '16px auto', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #111' }}>
+            <div style={{ fontSize: 11, color: '#6b7280' }}>QR Code</div>
+          </div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#1a1a1a', letterSpacing: '2px', marginBottom: 4 }}>SCAN TO ORDER</div>
+          <div style={{ fontSize: 10, color: '#6b7280', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://menuverse.ai/menu/demo</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 8, fontSize: 11, color: '#10b981' }}>
+            <Check size={14} /> Live QR — scan with any camera to verify
+          </div>
+        </div>
+
+        {/* Share & Export */}
+        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', marginBottom: 12 }}>Share & Export</div>
+          <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: '10px 14px', fontSize: 12, fontFamily: 'monospace', color: '#1a1a1a', marginBottom: 16, wordBreak: 'break-all' }}>
+            DIRECT LINK: https://menuverse.ai/menu/demo
+          </div>
+          {[
+            { icon: Copy, label: 'Copy menu link', action: () => copy('https://menuverse.ai/menu/demo', 'link') },
+            { icon: Download, label: 'Download QR as PNG' },
+            { icon: Printer, label: 'Print table tent' },
+            { icon: Share2, label: 'Share directly' },
+          ].map(a => (
+            <button key={a.label} onClick={a.action} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontSize: 13, color: '#1a1a1a', marginBottom: 8, textAlign: 'left' }}>
+              <a.icon size={16} style={{ color: '#6b7280' }} />
+              {a.label}
+              {copied === a.label.toLowerCase().replace(/ /g, '-') && <Check size={14} style={{ marginLeft: 'auto', color: '#10b981' }} />}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Per-Table QR Codes */}
+      <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 24 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', marginBottom: 4 }}>Per-Table QR Codes</div>
+        <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 16 }}>Each table gets its own URL — track which tables are most active in Analytics.</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 12 }}>
+          {TABLE_QR.map(t => (
+            <div key={t.id} onClick={() => copy(t.url, t.id)} style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s' }}>
+              <div style={{ width: 64, height: 64, background: 'white', margin: '0 auto 8px', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e5e7eb' }}>
+                <div style={{ fontSize: 9, color: '#6b7280' }}>QR</div>
               </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#1a1a1a' }}>{t.id}</div>
+              {copied === t.id && <Check size={12} style={{ color: '#10b981', marginTop: 4 }} />}
             </div>
-            <div className="space-y-4 text-center">
-              <p className="text-sm font-medium text-primary">Scan to view the live restaurant menu</p>
-              <p className="text-sm leading-6 text-muted">Embed this code on receipts, tables, or digital screens to let guests order instantly.</p>
-            </div>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button variant="ghost">Download</Button>
-              <Button variant="ghost">Copy link</Button>
-              <Button>Share</Button>
-            </div>
-          </Card>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="p-8">
-            <div className="rounded-[28px] bg-gradient-to-br from-primary/10 to-white p-6 text-center shadow-soft">
-              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-accent text-lg shadow-card">📱</div>
-              <h3 className="text-xl font-semibold text-primary">Live menu preview</h3>
-              <p className="mt-3 text-sm leading-6 text-muted">Customers tap, scan, and browse your menu on mobile instantly.</p>
-            </div>
-            <div className="mt-8 grid gap-3">
-              {['Instant scan', 'Branded menu experience', 'Easy sharing', 'Real-time updates'].map((item) => (
-                <div key={item} className="rounded-3xl border border-border bg-slate-50 px-4 py-4 text-sm text-primary">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
+          ))}
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

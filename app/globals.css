@@ -1,111 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-background: #FFFFFF;
-  --color-surface: #FFFFFF;
-  --color-border: #ECECEC;
-  --color-text: #14141A;
-  --color-muted: #84848C;
-  --color-accent: #E5484D;
-  --color-accent-tint: #FDEDEE;
-  --color-success: #E8F5E9;
-  --color-success-text: #2E7D32;
-  --color-pending: #FFF4E5;
-  --color-pending-text: #B45309;
+  --color-bg: #FFFEFB;
+  --color-text: #1a1a1a;
+  --color-accent: #F5A623;
+  --color-accent-hover: #e0991e;
+  --color-dark: #111;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
   --radius-card: 20px;
-  --radius-input: 12px;
   --radius-pill: 999px;
-  --shadow-card: 0 12px 24px rgba(20,20,26,0.08);
-  --shadow-soft: 0 6px 18px rgba(20,20,26,0.06);
-}
-
-html {
-  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--color-text);
-  background: var(--color-background);
-}
-
-body {
-  margin: 0;
-  min-height: 100%;
-  background: var(--color-background);
-  color: var(--color-text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-::selection {
-  background: var(--color-accent-tint);
+html {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   color: var(--color-text);
+  background: var(--color-bg);
 }
 
-body,
-#root,
-#__next {
-  min-height: 100%;
-}
-
-.card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-}
-
-.surface {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-}
-
-.input-base {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-input);
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
   color: var(--color-text);
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  -webkit-font-smoothing: antialiased;
 }
 
-.input-base:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 4px rgba(229, 72, 77, 0.12);
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(16px);
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 
-.glass-btn {
-  transition: transform 180ms ease, filter 180ms ease;
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-.glass-btn:hover {
-  transform: translateY(-1px);
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-@media (max-width: 768px) {
-  .sidebar-hidden-mobile {
-    display: none;
-  }
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 }
 
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
+.animate-slide-right { animation: slideInRight 0.3s ease-out; }
+.animate-slide-up { animation: slideInUp 0.4s ease-out; }
+.animate-bounce-sm { animation: bounce 0.3s ease-in-out; }
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: pulse 1.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  animation: slideInUp 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 360px;
+}
