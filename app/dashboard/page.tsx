@@ -1,17 +1,19 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useI18n } from '../../lib/contexts'
 import { Flame, TrendingUp, AlertTriangle, Lightbulb, Star, BarChart3 } from 'lucide-react'
 
 export default function DashboardOverview() {
   const router = useRouter()
+  const { t } = useI18n()
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a1a', margin: 0 }}>Overview</h1>
-          <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>Here's how your restaurant is doing today.</p>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a1a', margin: 0 }}>{t('Overview')}</h1>
+          <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>{t("Here's how your restaurant is doing today.")}</p>
         </div>
       </div>
 
@@ -24,7 +26,7 @@ export default function DashboardOverview() {
         ].map(s => (
           <div key={s.label} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>{s.label}</span>
+              <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>{t(s.label)}</span>
               <s.icon size={18} style={{ color: '#6b7280' }} />
             </div>
             <div style={{ fontSize: 28, fontWeight: 800, color: '#1a1a1a' }}>{s.value}</div>
@@ -36,7 +38,7 @@ export default function DashboardOverview() {
       <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, padding: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <span style={{ color: '#F5A623', fontSize: 16 }}>✦</span>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>AI Revenue Copilot</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>{t('AI Revenue Copilot')}</div>
           <span style={{ fontSize: 10, color: '#6b7280', background: '#f3f4f6', padding: '2px 8px', borderRadius: 999 }}>Rule-based</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
@@ -50,8 +52,8 @@ export default function DashboardOverview() {
           ].map(c => (
             <div key={c.title} style={{ background: '#f9fafb', borderRadius: 12, padding: 14 }}>
               <div style={{ marginBottom: 4 }}><c.icon size={20} style={{ color: '#1a1a1a' }} /></div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>{c.title}</div>
-              <div style={{ fontSize: 12, color: '#6b7280' }}>{c.desc}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>{t(c.title)}</div>
+              <div style={{ fontSize: 12, color: '#6b7280' }}>{t(c.desc)}</div>
             </div>
           ))}
         </div>

@@ -6,9 +6,10 @@ import { ArrowLeft } from 'lucide-react'
 interface BackButtonProps {
   fallback?: string
   label?: string
+  variant?: 'light' | 'dark'
 }
 
-export default function BackButton({ fallback = '/', label = 'Back' }: BackButtonProps) {
+export default function BackButton({ fallback = '/', label = 'Back', variant = 'light' }: BackButtonProps) {
   const router = useRouter()
 
   const handleBack = () => {
@@ -19,6 +20,8 @@ export default function BackButton({ fallback = '/', label = 'Back' }: BackButto
     }
   }
 
+  const isDark = variant === 'dark'
+
   return (
     <button
       onClick={handleBack}
@@ -27,9 +30,9 @@ export default function BackButton({ fallback = '/', label = 'Back' }: BackButto
         width: 40,
         height: 40,
         borderRadius: '50%',
-        border: '1px solid rgba(255,255,255,0.15)',
-        background: 'transparent',
-        color: 'white',
+        border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid #e5e7eb',
+        background: isDark ? 'transparent' : 'white',
+        color: isDark ? 'white' : '#1a1a1a',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

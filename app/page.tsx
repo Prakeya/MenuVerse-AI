@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useI18n } from '../lib/contexts'
 import { LANGUAGES } from '../lib/mockData'
 import { Globe, ChevronDown, Building2, Users } from 'lucide-react'
@@ -8,7 +9,7 @@ import { Globe, ChevronDown, Building2, Users } from 'lucide-react'
 const SEEDED_AVATARS = ['https://i.pravatar.cc/40?u=1', 'https://i.pravatar.cc/40?u=2', 'https://i.pravatar.cc/40?u=3']
 
 export default function LandingPage() {
-  const { lang, setLang } = useI18n()
+  const { lang, setLang, t } = useI18n()
   const [showLang, setShowLang] = useState(false)
 
   return (
@@ -23,22 +24,26 @@ export default function LandingPage() {
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#F5A623', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#111' }}>M</div>
           <span style={{ fontWeight: 600, fontSize: 15, color: 'white', letterSpacing: '-0.3px' }}>MenuVerse AI</span>
         </div>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ position: 'relative' }}>
-            <button onClick={() => setShowLang(!showLang)} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '8px 14px', color: 'white', cursor: 'pointer', fontSize: 13 }}>
-              <Globe size={16} />
-              <span style={{ fontWeight: 600 }}>{lang.toUpperCase()}</span>
-              <ChevronDown size={14} />
-            </button>
-            {showLang && (
-              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, background: 'white', borderRadius: 16, boxShadow: '0 12px 32px rgba(0,0,0,0.2)', padding: 8, minWidth: 160, zIndex: 20 }}>
-                {LANGUAGES.map(l => (
-                  <button key={l.code} onClick={() => { setLang(l.code); setShowLang(false) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', borderRadius: 8, border: 'none', background: lang === l.code ? '#f5f5f5' : 'transparent', cursor: 'pointer', fontSize: 13, color: '#1a1a1a' }}>
-                    {l.name} {lang === l.code && '✓'}
-                  </button>
-                ))}
-              </div>
-            )}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {LANGUAGES.map(l => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  border: 'none',
+                  background: lang === l.code ? '#F5A623' : 'rgba(255,255,255,0.1)',
+                  color: lang === l.code ? '#111' : 'white',
+                  cursor: 'pointer',
+                  fontSize: 11,
+                  fontWeight: 700
+                }}
+              >
+                {l.code.toUpperCase()}
+              </button>
+            ))}
           </div>
         </nav>
       </header>
@@ -55,21 +60,21 @@ export default function LandingPage() {
           </div>
 
           <h1 style={{ fontSize: 'clamp(40px, 8vw, 80px)', fontWeight: 800, lineHeight: 1.05, letterSpacing: '-3px', color: 'white', margin: 0 }}>
-            Taste.<span style={{ color: '#F5A623' }}> Order.</span><br />Delight.
+            {t('Taste. Order. Delight.')}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16, marginTop: 20, maxWidth: 500, margin: '20px auto 0', lineHeight: 1.6 }}>
-            AI-powered restaurant OS that turns every table into a cinematic dining experience.
+            {t('AI-powered restaurant OS that turns every table into a cinematic dining experience.')}
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'row', gap: 16, justifyContent: 'center', marginTop: 40 }}>
-            <a href="/diner-choice" style={{ background: '#F5A623', color: '#111', border: 'none', borderRadius: 999, padding: '16px 32px', fontSize: 16, fontWeight: 700, cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <Link href="/diner-choice" style={{ background: '#F5A623', color: '#111', border: 'none', borderRadius: 999, padding: '16px 32px', fontSize: 16, fontWeight: 700, cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               <Users size={20} />
-              I'm a Diner
-            </a>
-            <a href="/login" style={{ background: '#111', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '16px 32px', fontSize: 16, fontWeight: 600, cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              {t("I'm a Diner")}
+            </Link>
+            <Link href="/login" style={{ background: '#111', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '16px 32px', fontSize: 16, fontWeight: 600, cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               <Building2 size={20} />
-              I'm an Owner
-            </a>
+              {t("I'm an Owner")}
+            </Link>
           </div>
         </div>
       </main>

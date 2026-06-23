@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '../../lib/contexts'
 import { MapPin, Globe, ChevronDown, Search, Star, Clock, Navigation } from 'lucide-react'
 import { MOCK_DISHES, LANGUAGES } from '../../lib/mockData'
 import { Restaurant } from '../../lib/types'
-import MapComponent from '../../components/MapComponent'
 import BackButton from '../../components/BackButton'
+import ImageWithFallback from '../../components/ImageWithFallback'
 
 const CITIES = ['New York', 'Los Angeles', 'Chicago', 'Miami', 'San Francisco', 'Austin']
 
@@ -28,6 +29,7 @@ const CITY_COORDS: Record<string, [number, number]> = {
 
 export default function DiscoveryPage() {
   const router = useRouter()
+  const { t, lang, setLang } = useI18n()
   const [place, setPlace] = useState('New York')
   const [showPlaceMenu, setShowPlaceMenu] = useState(false)
   const [showLang, setShowLang] = useState(false)
@@ -37,6 +39,12 @@ export default function DiscoveryPage() {
   const cuisines = Array.from(new Set(RESTAURANTS.map(r => r.cuisine_type)))
   const filtered = cuisineFilter ? RESTAURANTS.filter(r => r.cuisine_type === cuisineFilter) : RESTAURANTS
   const center = CITY_COORDS[place] || [40.7128, -74.0060]
+
+  const [MapComponent, setMapComponent] = useState<any>(null)
+
+  useEffect(() => {
+    import('../../components/MapComponent').then(mod => setMapComponent(() => mod.default))
+  }, [])
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFEFB' }}>
@@ -72,15 +80,15 @@ export default function DiscoveryPage() {
               )}
             </div>
             {/* Language selector */}
-            <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowLang(!showLang)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 999, border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>
-                <Globe size={16} /> EN <ChevronDown size={14} />
+            <div style={{ position: 'relative', zIndex: 9999 }}>
+              <button onClick={() => setShowLang(!showLang)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 999, border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#1a1a1a', position: 'relative', zIndex: 9999 }}>
+                <Globe size={16} /> {lang.toUpperCase()} <ChevronDown size={14} />
               </button>
               {showLang && (
-                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, background: 'white', borderRadius: 16, boxShadow: '0 12px 32px rgba(0,0,0,0.1)', padding: 8, minWidth: 160, zIndex: 20 }}>
+                <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, background: 'white', borderRadius: 16, boxShadow: '0 12px 32px rgba(0,0,0,0.2)', padding: 8, minWidth: 180, zIndex: 9999, pointerEvents: 'auto' }}>
                   {LANGUAGES.map(l => (
-                    <button key={l.code} onClick={() => setShowLang(false)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, color: '#1a1a1a' }}>
-                      {l.name}
+                    <button key={l.code} onClick={(e) => { e.stopPropagation(); setLang(l.code); setShowLang(false) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', borderRadius: 8, border: 'none', background: lang === l.code ? '#f5f5f5' : 'transparent', cursor: 'pointer', fontSize: 14, color: '#1a1a1a', pointerEvents: 'auto' }}>
+                      {l.name} {lang === l.code && '✓'}
                     </button>
                   ))}
                 </div>
@@ -92,15 +100,15 @@ export default function DiscoveryPage() {
 
       <main style={{ maxWidth: 1200, margin: '0 auto', padding: 24 }}>
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1a1a1a', margin: '0 0 4px' }}>Restaurants near you</h1>
-          <p style={{ fontSize: 14, color: '#6b7280', margin: 0 }}>{filtered.length} restaurants in {place}</p>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1a1a1a', margin: '0 0 4px' }}>{t('Browse Restaurants Near Me')}</h1>
+          <p style={{ fontSize: 14, color: '#6b7280', margin: 0 }}>{filtered.length} {t('item(s)')}</p>
         </div>
 
         {/* Cuisine filters */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto' }} className="scrollbar-hide">
-          <button onClick={() => setCuisineFilter(null)} style={{ padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, background: !cuisineFilter ? '#111' : '#f3f4f6', color: !cuisineFilter ? 'white' : '#1a1a1a' }}>All</button>
+          <button onClick={() => setCuisineFilter(null)} style={{ padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, background: !cuisineFilter ? '#111' : '#f3f4f6', color: !cuisineFilter ? 'white' : '#1a1a1a' }}>{t('All Dishes')}</button>
           {cuisines.map(c => (
-            <button key={c} onClick={() => setCuisineFilter(c)} style={{ padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, background: cuisineFilter === c ? '#111' : '#f3f4f6', color: cuisineFilter === c ? 'white' : '#1a1a1a' }}>{c}</button>
+            <button key={c} onClick={() => setCuisineFilter(c)} style={{ padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, background: cuisineFilter === c ? '#111' : '#f3f4f6', color: cuisineFilter === c ? 'white' : '#1a1a1a' }}>{t(c)}</button>
           ))}
         </div>
 
@@ -108,18 +116,20 @@ export default function DiscoveryPage() {
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Navigation size={16} /> Map View
+              <Navigation size={16} /> {t('Map View')}
             </div>
             <button onClick={() => setShowHotels(!showHotels)} style={{ padding: '8px 16px', borderRadius: 999, border: showHotels ? 'none' : '1px solid #e5e7eb', background: showHotels ? '#111' : 'white', color: showHotels ? 'white' : '#1a1a1a', cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <MapPin size={14} /> {showHotels ? 'Hide' : 'View'} Hotels Near Me
+              <MapPin size={14} /> {showHotels ? t('Hide') : t('View')} {t('Browse Restaurants Near Me')}
             </button>
           </div>
-          <MapComponent
+          {MapComponent && (
+            <MapComponent
             center={center}
             restaurants={filtered.map(r => ({ id: r.id, name: r.name, latitude: r.latitude, longitude: r.longitude, rating: r.rating, signature_dish_name: r.signature_dish_name }))}
             showHotels={showHotels}
-            onRestaurantClick={(id) => router.push(`/menu/${id}`)}
-          />
+              onRestaurantClick={(id: string) => router.push(`/menu/${id}`)}
+            />
+          )}
         </div>
 
         {/* Restaurant cards */}
@@ -127,7 +137,7 @@ export default function DiscoveryPage() {
           {filtered.map(r => (
             <div key={r.id} onClick={() => router.push(`/menu/${r.id}`)} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s' }}>
               <div style={{ position: 'relative', height: 180 }}>
-                <img src={r.cover_image} alt={r.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <ImageWithFallback src={r.cover_image} alt={r.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', top: 12, right: 12, background: 'white', borderRadius: 999, padding: '4px 10px', fontSize: 12, fontWeight: 700, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Star size={12} style={{ color: '#F5A623' }} /> {r.rating}
                 </div>
@@ -139,17 +149,17 @@ export default function DiscoveryPage() {
                 </div>
                 {r.signature_dish && (
                   <div style={{ background: '#f9fafb', borderRadius: 10, padding: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <img src={r.signature_dish.image_url} alt={r.signature_dish_name} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
+                    <ImageWithFallback src={r.signature_dish.image_url} alt={r.signature_dish_name || ''} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: '#F5A623', letterSpacing: '0.05em', marginBottom: 2 }}>SIGNATURE DISH</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: '#F5A623', letterSpacing: '0.05em', marginBottom: 2 }}>{t('SIGNATURE DISH')}</div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{r.signature_dish_name}</div>
                       <div style={{ fontSize: 12, color: '#6b7280' }}>${r.signature_dish.price.toFixed(2)}</div>
                     </div>
                   </div>
                 )}
                 <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 12, color: '#6b7280' }}>{r.distance_km} km away</span>
-                  <span style={{ padding: '6px 14px', borderRadius: 999, background: '#111', color: 'white', fontSize: 12, fontWeight: 600 }}>View Menu</span>
+                   <span style={{ fontSize: 12, color: '#6b7280' }}>{r.distance_km} {t('km away')}</span>
+                  <span style={{ padding: '6px 14px', borderRadius: 999, background: '#111', color: 'white', fontSize: 12, fontWeight: 600 }}>{t('View Menu')}</span>
                 </div>
               </div>
             </div>

@@ -5,6 +5,7 @@ import { MenuItem } from '../lib/types'
 import { useCart, useI18n } from '../lib/contexts'
 import { X, Minus, Plus, AlertTriangle, ChevronRight, Check, Flame, Star, Heart, ChefHat, Ban, Wine } from 'lucide-react'
 import { MOCK_DISHES } from '../lib/mockData'
+import ImageWithFallback from './ImageWithFallback'
 
 const SIZES = ['380g', '480g', '560g']
 const ADD_ONS = ['Extra Cheese', 'Avocado', 'Bacon', 'Jalapeños']
@@ -20,7 +21,8 @@ const BADGE_STYLES: Record<string, { bg: string; color: string; icon: any }> = {
 
 export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose: () => void }) {
   const { addToCart } = useCart()
-  const { t } = useI18n()
+  const { t, translateMenuItem } = useI18n()
+  const dishTranslation = translateMenuItem(dish.item_id, dish.name, dish.description)
   const [qty, setQty] = useState(1)
   const [selectedSize, setSelectedSize] = useState(SIZES[1])
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
@@ -54,24 +56,24 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           {/* Left: Image */}
           <div style={{ flex: 1, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src={dish.image_url} alt={dish.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <ImageWithFallback src={dish.image_url} alt={dish.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
 
           {/* Right: Details */}
           <div style={{ flex: 1, padding: 32, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
             {badgeKey && badgeStyle && BadgeIcon && (
               <div style={{ marginBottom: 12 }}>
-                <span style={{ background: badgeStyle.bg, color: badgeStyle.color, borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', gap: 6, textTransform: 'uppercase' }}>
-                  <BadgeIcon size={14} /> {badgeKey.replace('-', ' ')}
+                  <span style={{ background: badgeStyle.bg, color: badgeStyle.color, borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', gap: 6, textTransform: 'uppercase' }}>
+                  <BadgeIcon size={14} /> {t(badgeKey.replace('-', ' ').toUpperCase())}
                 </span>
               </div>
             )}
-            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1a1a1a', margin: '0 0 8px' }}>{dish.name}</h2>
-            <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.6, margin: '0 0 20px' }}>{dish.description}</p>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1a1a1a', margin: '0 0 8px' }}>{dishTranslation.name}</h2>
+            <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.6, margin: '0 0 20px' }}>{dishTranslation.description}</p>
 
             {/* Size selector */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>Size</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>{t('Size')}</div>
               <div style={{ display: 'flex', gap: 8 }}>
                 {SIZES.map(s => (
                   <button key={s} onClick={() => setSelectedSize(s)} style={{
@@ -86,7 +88,7 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
 
             {/* Build Your Meal */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>Build Your Meal</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>{t('Build Your Meal')}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {ADD_ONS.map(addon => (
                   <button key={addon} onClick={() => toggleAddOn(addon)} style={{
@@ -94,7 +96,7 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
                     background: selectedAddOns.includes(addon) ? '#fef3c7' : 'white', color: '#1a1a1a', borderColor: selectedAddOns.includes(addon) ? '#F5A623' : '#e5e7eb'
                   }}>
                     {selectedAddOns.includes(addon) && <Check size={14} style={{ color: '#F5A623' }} />}
-                    {addon}
+                    {t(addon)}
                   </button>
                 ))}
               </div>
@@ -102,7 +104,7 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
 
             {/* Ingredients & Allergens */}
             <div style={{ marginBottom: 20, padding: 16, background: '#f9fafb', borderRadius: 16, border: '1px solid #e5e7eb' }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>Ingredients</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 8 }}>{t('Ingredients')}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
                 {dish.ingredients?.map(ing => (
                   <span key={ing} style={{ padding: '4px 10px', background: 'white', borderRadius: 999, border: '1px solid #e5e7eb', fontSize: 11, color: '#1a1a1a' }}>{ing}</span>
@@ -110,13 +112,13 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
               </div>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <AlertTriangle size={14} style={{ color: '#dc2626' }} />
-                Allergens
+                {t('Allergens')}
               </div>
               <div style={{ padding: '8px 12px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, fontSize: 12, color: '#991b1b', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <AlertTriangle size={14} />
                 {dish.allergens && dish.allergens.length > 0
-                  ? `Contains: ${dish.allergens.join(', ')}`
-                  : 'No major allergens listed'}
+                  ? `${t('Contains')}: ${dish.allergens.join(', ')}`
+                  : t('No major allergens listed')}
               </div>
             </div>
 
@@ -134,7 +136,7 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
               <button onClick={handleAdd} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#111', color: 'white', border: 'none', borderRadius: 999, padding: '14px 24px', cursor: 'pointer', fontSize: 15, fontWeight: 700 }}>
                 <span>${(dish.price * qty).toFixed(2)}</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  Add to Order
+                  {t('Add to Order')}
                   <ChevronRight size={18} />
                 </span>
               </button>
@@ -142,13 +144,12 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
 
             {/* Pairings */}
             <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 12 }}>Recommended Pairings</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 12 }}>{t('Recommended Pairings')}</div>
               <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }} className="scrollbar-hide">
                 {pairings.map(p => (
                   <div key={p.item_id} style={{ minWidth: 160, background: '#f9fafb', borderRadius: 12, padding: 10, cursor: 'pointer' }}>
-                    <img src={p.image_url} alt={p.name} style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 8 }} />
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginTop: 6 }}>{p.name}</div>
-                    <div style={{ fontSize: 12, color: '#6b7280' }}>${p.price.toFixed(2)}</div>
+                    <ImageWithFallback src={p.image_url} alt={p.name} style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 8 }} />
+                  {(() => { const tr = translateMenuItem(p.item_id, p.name, p.description); return <><div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginTop: 6 }}>{tr.name}</div><div style={{ fontSize: 12, color: '#6b7280' }}>${p.price.toFixed(2)}</div></> })()}
                   </div>
                 ))}
               </div>

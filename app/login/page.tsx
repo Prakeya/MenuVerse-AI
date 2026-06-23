@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '../../lib/contexts'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -25,24 +27,24 @@ export default function LoginPage() {
 
       <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
         <div style={{ maxWidth: 400, width: '100%' }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 4px', color: '#1a1a1a' }}>Sign in</h1>
-          <p style={{ fontSize: 14, color: '#6b7280', margin: '0 0 32px' }}>Enter your credentials to access the dashboard</p>
+          <h1 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 4px', color: '#1a1a1a' }}>{t('Sign in')}</h1>
+          <p style={{ fontSize: 14, color: '#6b7280', margin: '0 0 32px' }}>{t('Enter your credentials to access the dashboard')}</p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>Email</label>
+              <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>{t('Email')}</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@menuverse.ai" style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 14, outline: 'none', background: 'white' }} />
             </div>
             <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>Password</label>
+              <label style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block', marginBottom: 6 }}>{t('Password')}</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 14, outline: 'none', background: 'white' }} />
             </div>
             <button type="submit" style={{ width: '100%', padding: '14px', borderRadius: 999, border: 'none', background: '#111', color: 'white', fontSize: 15, fontWeight: 700, cursor: 'pointer', marginTop: 8 }}>
-              Sign In
+              {t('Sign In')}
             </button>
           </form>
           <p style={{ fontSize: 12, color: '#6b7280', textAlign: 'center', marginTop: 24 }}>
-            Demo credentials: <strong>admin@menuverse.ai</strong> / <strong>password123</strong>
+            {t('Demo credentials')}: <strong>admin@menuverse.ai</strong> / <strong>password123</strong>
           </p>
         </div>
       </main>

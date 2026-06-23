@@ -83,15 +83,6 @@ export const MOCK_DISHES: MenuItem[] = [
     ingredients: ['Tea', 'Lemon', 'Sugar', 'Ice'],
     allergens: [], pairsWith: ['d6', 'd2']
   },
-  {
-    item_id: 'd10', restaurant_id: 'demo',
-    name: 'Sparkling Water', category: 'Drinks', price: 2.99,
-    description: 'Premium sparkling mineral water.',
-    image_url: 'https://images.unsplash.com/photo-1523362628745-0c100fc988a2?auto=format&fit=crop&w=600&q=80',
-    available: true, badges: [], prep_time: 1,
-    ingredients: ['Water', 'Carbon Dioxide'],
-    allergens: [], pairsWith: ['d1', 'd3', 'd7']
-  },
 ]
 
 export const CATEGORIES = ['Indian', 'Italian', 'Japanese', 'American', 'Salads', 'Desserts', 'Drinks']

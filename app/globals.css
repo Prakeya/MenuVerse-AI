@@ -82,6 +82,10 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
+button {
+  pointer-events: auto;
+}
+
 .toast {
   position: fixed;
   bottom: 24px;

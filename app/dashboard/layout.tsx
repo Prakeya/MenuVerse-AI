@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useI18n } from '../../lib/contexts'
 import { LayoutDashboard, MenuSquare, ClipboardList, BarChart3, Upload, QrCode, Settings } from 'lucide-react'
 import BackButton from '../../components/BackButton'
 
@@ -16,6 +17,7 @@ const NAV = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const { t } = useI18n()
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f9fafb' }}>
@@ -26,7 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#F5A623', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, color: '#111' }}>M</div>
             <span style={{ fontWeight: 600, fontSize: 14, color: '#1a1a1a' }}>MenuVerse AI</span>
           </div>
-          <BackButton fallback="/" label="Exit Dashboard" />
+          <BackButton fallback="/" label={t('Exit Dashboard')} />
         </div>
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {NAV.map(n => (
