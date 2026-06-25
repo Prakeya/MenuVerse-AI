@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '../../lib/contexts'
 import { MapPin, Globe, ChevronDown, Search, Star, Clock, Navigation } from 'lucide-react'
-import { MOCK_DISHES, LANGUAGES } from '../../lib/mockData'
 import { Restaurant } from '../../lib/types'
 import BackButton from '../../components/BackButton'
 import ImageWithFallback from '../../components/ImageWithFallback'
@@ -12,10 +11,10 @@ import ImageWithFallback from '../../components/ImageWithFallback'
 const CITIES = ['New York', 'Los Angeles', 'Chicago', 'Miami', 'San Francisco', 'Austin']
 
 const RESTAURANTS: Restaurant[] = [
-  { id: 'r1', name: 'The Golden Fork', cuisine_type: 'Indian', cover_image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80', rating: 4.8, distance_km: 0.8, address: '123 Main St', hours: '11:00 AM - 10:00 PM', signature_dish_name: 'Butter Chicken', signature_dish: MOCK_DISHES[0], latitude: 40.7128, longitude: -74.0060 },
-  { id: 'r2', name: 'Bella Italia', cuisine_type: 'Italian', cover_image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80', rating: 4.6, distance_km: 1.2, address: '456 Oak Ave', hours: '12:00 PM - 11:00 PM', signature_dish_name: 'Margherita Pizza', signature_dish: MOCK_DISHES[1], latitude: 40.7138, longitude: -74.0070 },
-  { id: 'r3', name: 'Sakura Sushi', cuisine_type: 'Japanese', cover_image: 'https://images.unsplash.com/photo-1579027989536-b7b1f875659b?auto=format&fit=crop&w=600&q=80', rating: 4.9, distance_km: 2.1, address: '789 Pine Rd', hours: '11:30 AM - 10:30 PM', signature_dish_name: 'Sushi Platter', signature_dish: MOCK_DISHES[2], latitude: 40.7148, longitude: -74.0080 },
-  { id: 'r4', name: 'Burger Republic', cuisine_type: 'American', cover_image: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=600&q=80', rating: 4.5, distance_km: 0.5, address: '321 Elm St', hours: '10:00 AM - 11:00 PM', signature_dish_name: 'Truffle Burger', signature_dish: MOCK_DISHES[5], latitude: 40.7118, longitude: -74.0050 },
+  { id: 'r1', name: 'The Golden Fork', cuisine_type: 'Indian', cover_image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80', rating: 4.8, distance_km: 0.8, address: '123 Main St', hours: '11:00 AM - 10:00 PM', signature_dish_name: 'Butter Chicken', latitude: 40.7128, longitude: -74.0060 },
+  { id: 'r2', name: 'Bella Italia', cuisine_type: 'Italian', cover_image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80', rating: 4.6, distance_km: 1.2, address: '456 Oak Ave', hours: '12:00 PM - 11:00 PM', signature_dish_name: 'Margherita Pizza', latitude: 40.7138, longitude: -74.0070 },
+  { id: 'r3', name: 'Sakura Sushi', cuisine_type: 'Japanese', cover_image: 'https://images.unsplash.com/photo-1579027989536-b7b1f875659b?auto=format&fit=crop&w=600&q=80', rating: 4.9, distance_km: 2.1, address: '789 Pine Rd', hours: '11:30 AM - 10:30 PM', signature_dish_name: 'Sushi Platter', latitude: 40.7148, longitude: -74.0080 },
+  { id: 'r4', name: 'Burger Republic', cuisine_type: 'American', cover_image: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=600&q=80', rating: 4.5, distance_km: 0.5, address: '321 Elm St', hours: '10:00 AM - 11:00 PM', signature_dish_name: 'Truffle Burger', latitude: 40.7118, longitude: -74.0050 },
 ]
 
 const CITY_COORDS: Record<string, [number, number]> = {
@@ -86,9 +85,9 @@ export default function DiscoveryPage() {
               </button>
               {showLang && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, background: 'white', borderRadius: 16, boxShadow: '0 12px 32px rgba(0,0,0,0.2)', padding: 8, minWidth: 180, zIndex: 9999, pointerEvents: 'auto' }}>
-                  {LANGUAGES.map(l => (
-                    <button key={l.code} onClick={(e) => { e.stopPropagation(); setLang(l.code); setShowLang(false) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', borderRadius: 8, border: 'none', background: lang === l.code ? '#f5f5f5' : 'transparent', cursor: 'pointer', fontSize: 14, color: '#1a1a1a', pointerEvents: 'auto' }}>
-                      {l.name} {lang === l.code && '✓'}
+                  {['en', 'es', 'fr', 'hi', 'ar', 'zh'].map(l => (
+                    <button key={l} onClick={(e) => { e.stopPropagation(); setLang(l); setShowLang(false) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', borderRadius: 8, border: 'none', background: lang === l ? '#f5f5f5' : 'transparent', cursor: 'pointer', fontSize: 14, color: '#1a1a1a', pointerEvents: 'auto' }}>
+                      {l.toUpperCase()} {lang === l && '✓'}
                     </button>
                   ))}
                 </div>
@@ -147,13 +146,14 @@ export default function DiscoveryPage() {
                 <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Clock size={12} /> {r.hours}
                 </div>
-                {r.signature_dish && (
+                {r.signature_dish_name && (
                   <div style={{ background: '#f9fafb', borderRadius: 10, padding: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <ImageWithFallback src={r.signature_dish.image_url} alt={r.signature_dish_name || ''} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
+                    <div style={{ width: 48, height: 48, borderRadius: 8, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ fontSize: 9, color: '#6b7280' }}>DISH</div>
+                    </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 11, fontWeight: 600, color: '#F5A623', letterSpacing: '0.05em', marginBottom: 2 }}>{t('SIGNATURE DISH')}</div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{r.signature_dish_name}</div>
-                      <div style={{ fontSize: 12, color: '#6b7280' }}>${r.signature_dish.price.toFixed(2)}</div>
                     </div>
                   </div>
                 )}

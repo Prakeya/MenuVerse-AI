@@ -1,14 +1,13 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart, useI18n } from '../../../lib/contexts'
-import { MOCK_DISHES, CATEGORIES, LANGUAGES } from '../../../lib/mockData'
+import { MenuItem } from '../../../lib/types'
 import CartDrawer from '../../../components/CartDrawer'
 import AIWaiter from '../../../components/AIWaiter'
 import DishDetail from '../../../components/DishDetail'
 import BackButton from '../../../components/BackButton'
-import { MenuItem } from '../../../lib/types'
 import { MapPin, ShoppingCart, MessageCircle, Flame, Star, Heart, ChefHat, AlertTriangle, Ban } from 'lucide-react'
 import ImageWithFallback from '../../../components/ImageWithFallback'
 
@@ -31,15 +30,35 @@ export default function MenuPage() {
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null)
   const [showPlaceMenu, setShowPlaceMenu] = useState(false)
   const [place] = useState('New York')
+  const [dishes, setDishes] = useState<MenuItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchMenu()
+  }, [])
+
+  const fetchMenu = async () => {
+    try {
+      const res = await fetch('/api/menu/demo')
+      if (res.ok) {
+        const data = await res.json()
+        setDishes(data)
+      }
+    } catch (error) {
+      console.error('Error fetching menu:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filtered = useMemo(() => {
-    if (!category) return MOCK_DISHES
-    return MOCK_DISHES.filter(d => d.category === category)
-  }, [category])
+    if (!category) return dishes
+    return dishes.filter(d => d.category === category)
+  }, [category, dishes])
 
-  const hero = MOCK_DISHES[0]
+  const hero = dishes[0]
   const { translateMenuItem } = useI18n()
-  const translatedHero = translateMenuItem(hero.item_id, hero.name, hero.description)
+  const translatedHero = hero ? translateMenuItem(hero.item_id, hero.name, hero.description) : { name: '', description: '' }
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFEFB' }}>
@@ -69,22 +88,22 @@ export default function MenuPage() {
             </div>
             {/* Language buttons - simple and always visible */}
             <div style={{ display: 'flex', gap: 4 }}>
-              {LANGUAGES.map(l => (
+              {['en', 'es', 'fr', 'hi', 'ar', 'zh'].map(l => (
                 <button
-                  key={l.code}
-                  onClick={() => setLang(l.code)}
+                  key={l}
+                  onClick={() => setLang(l)}
                   style={{
                     padding: '6px 12px',
                     borderRadius: 8,
                     border: 'none',
-                    background: lang === l.code ? '#111' : '#f3f4f6',
-                    color: lang === l.code ? 'white' : '#1a1a1a',
+                    background: lang === l ? '#111' : '#f3f4f6',
+                    color: lang === l ? 'white' : '#1a1a1a',
                     cursor: 'pointer',
                     fontSize: 12,
                     fontWeight: 600
                   }}
                 >
-                  {l.code.toUpperCase()}
+                  {l.toUpperCase()}
                 </button>
               ))}
             </div>
@@ -94,52 +113,60 @@ export default function MenuPage() {
         {/* Category pills */}
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '8px 24px 12px', display: 'flex', gap: 8, overflowX: 'auto' }} className="scrollbar-hide">
           <button onClick={() => setCategory(null)} style={{ padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, background: !category ? '#111' : '#f3f4f6', color: !category ? 'white' : '#1a1a1a' }}>{t('All Dishes')}</button>
-          {CATEGORIES.map(c => (
+          {['Appetizers', 'Main Course', 'Desserts', 'Beverages', 'Salads', 'Sides'].map(c => (
             <button key={c} onClick={() => setCategory(c)} style={{ padding: '8px 18px', borderRadius: 999, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, background: category === c ? '#111' : '#f3f4f6', color: category === c ? 'white' : '#1a1a1a' }}>{t(c)}</button>
           ))}
         </div>
       </header>
 
       <main style={{ maxWidth: 1200, margin: '0 auto', padding: 24 }}>
-        {/* Hero Banner */}
-        <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', marginBottom: 32, height: 440, background: '#111' }}>
-          <ImageWithFallback src={hero.image_url} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.2))' }} />
-          
-          <div style={{ position: 'absolute', top: 20, left: 24, display: 'flex', gap: 8 }}>
-            <span style={{ background: '#F5A623', color: '#111', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em' }}>TODAY'S FEATURE</span>
-            <span style={{ background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 600, letterSpacing: '0.05em' }}>{hero.category.toUpperCase()}</span>
-          </div>
-          
-          <div style={{ position: 'absolute', top: 20, right: 24, background: 'white', borderRadius: 999, padding: '6px 16px', fontSize: 16, fontWeight: 800, color: '#111', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-            ${hero.price.toFixed(2)}
-          </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: 60, color: '#6b7280' }}>Loading menu...</div>
+        ) : hero ? (
+          <>
+            {/* Hero Banner */}
+            <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', marginBottom: 32, height: 440, background: '#111' }}>
+              <ImageWithFallback src={hero.image_url} alt={hero.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.2))' }} />
+              
+              <div style={{ position: 'absolute', top: 20, left: 24, display: 'flex', gap: 8 }}>
+                <span style={{ background: '#F5A623', color: '#111', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em' }}>TODAY'S FEATURE</span>
+                <span style={{ background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: 999, padding: '4px 12px', fontSize: 11, fontWeight: 600, letterSpacing: '0.05em' }}>{hero.category.toUpperCase()}</span>
+              </div>
+              
+              <div style={{ position: 'absolute', top: 20, right: 24, background: 'white', borderRadius: 999, padding: '6px 16px', fontSize: 16, fontWeight: 800, color: '#111', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                ${hero.price.toFixed(2)}
+              </div>
 
-          <div style={{ position: 'absolute', bottom: 32, left: 32, maxWidth: 500 }}>
-            <h2 style={{ fontSize: 36, fontWeight: 800, color: 'white', margin: '0 0 8px' }}>{translatedHero.name}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.5, margin: '0 0 16px' }}>{translatedHero.description}</p>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button onClick={() => addToCart(hero)} style={{ background: '#F5A623', color: '#111', border: 'none', borderRadius: 999, padding: '12px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-                + {t('Add to Order')}
-              </button>
-              <button onClick={() => setSelectedDish(hero)} style={{ background: 'transparent', color: 'rgba(255,255,255,0.8)', border: 'none', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>
-                View details
-              </button>
+              <div style={{ position: 'absolute', bottom: 32, left: 32, maxWidth: 500 }}>
+                <h2 style={{ fontSize: 36, fontWeight: 800, color: 'white', margin: '0 0 8px' }}>{translatedHero.name}</h2>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.5, margin: '0 0 16px' }}>{translatedHero.description}</p>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={() => addToCart(hero)} style={{ background: '#F5A623', color: '#111', border: 'none', borderRadius: 999, padding: '12px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                    + {t('Add to Order')}
+                  </button>
+                  <button onClick={() => setSelectedDish(hero)} style={{ background: 'transparent', color: 'rgba(255,255,255,0.8)', border: 'none', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>
+                    View details
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* All Dishes */}
-        <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('All Dishes')}</h3>
-          <span style={{ fontSize: 13, color: '#6b7280' }}>{filtered.length} items</span>
-        </div>
+            {/* All Dishes */}
+            <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('All Dishes')}</h3>
+              <span style={{ fontSize: 13, color: '#6b7280' }}>{filtered.length} items</span>
+            </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
-          {filtered.map((dish) => (
-            <DishCard key={dish.item_id} dish={dish} onAdd={() => addToCart(dish)} onOpen={() => setSelectedDish(dish)} />
-          ))}
-        </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
+              {filtered.map((dish) => (
+                <DishCard key={dish.item_id} dish={dish} onAdd={() => addToCart(dish)} onOpen={() => setSelectedDish(dish)} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: 60, color: '#6b7280' }}>No menu items available</div>
+        )}
       </main>
 
       {/* Floating AI Waiter button */}

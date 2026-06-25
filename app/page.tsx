@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useI18n } from '../lib/contexts'
-import { LANGUAGES } from '../lib/mockData'
 import { Globe, ChevronDown, Building2, Users } from 'lucide-react'
 
 const SEEDED_AVATARS = ['https://i.pravatar.cc/40?u=1', 'https://i.pravatar.cc/40?u=2', 'https://i.pravatar.cc/40?u=3']
@@ -26,22 +25,22 @@ export default function LandingPage() {
         </div>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ display: 'flex', gap: 4 }}>
-            {LANGUAGES.map(l => (
+            {['en', 'es', 'fr', 'hi', 'ar', 'zh'].map(l => (
               <button
-                key={l.code}
-                onClick={() => setLang(l.code)}
+                key={l}
+                onClick={() => setLang(l)}
                 style={{
                   padding: '6px 10px',
                   borderRadius: 8,
                   border: 'none',
-                  background: lang === l.code ? '#F5A623' : 'rgba(255,255,255,0.1)',
-                  color: lang === l.code ? '#111' : 'white',
+                  background: lang === l ? '#F5A623' : 'rgba(255,255,255,0.1)',
+                  color: lang === l ? '#111' : 'white',
                   cursor: 'pointer',
                   fontSize: 11,
                   fontWeight: 700
                 }}
               >
-                {l.code.toUpperCase()}
+                {l.toUpperCase()}
               </button>
             ))}
           </div>

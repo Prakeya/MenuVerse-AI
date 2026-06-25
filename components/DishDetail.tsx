@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { MenuItem } from '../lib/types'
 import { useCart, useI18n } from '../lib/contexts'
 import { X, Minus, Plus, AlertTriangle, ChevronRight, Check, Flame, Star, Heart, ChefHat, Ban, Wine } from 'lucide-react'
-import { MOCK_DISHES } from '../lib/mockData'
 import ImageWithFallback from './ImageWithFallback'
 
 const SIZES = ['380g', '480g', '560g']
@@ -36,7 +35,7 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
     onClose()
   }
 
-  const pairings = (dish.pairsWith || []).map(id => MOCK_DISHES.find(d => d.item_id === id)).filter(Boolean) as MenuItem[]
+  const pairings: MenuItem[] = []
 
   const badgeKey = dish.badges?.[0]
   const badgeStyle = badgeKey ? BADGE_STYLES[badgeKey] : null
@@ -143,17 +142,19 @@ export default function DishDetail({ dish, onClose }: { dish: MenuItem; onClose:
             </div>
 
             {/* Pairings */}
-            <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 12 }}>{t('Recommended Pairings')}</div>
-              <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }} className="scrollbar-hide">
-                {pairings.map(p => (
-                  <div key={p.item_id} style={{ minWidth: 160, background: '#f9fafb', borderRadius: 12, padding: 10, cursor: 'pointer' }}>
-                    <ImageWithFallback src={p.image_url} alt={p.name} style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 8 }} />
-                  {(() => { const tr = translateMenuItem(p.item_id, p.name, p.description); return <><div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginTop: 6 }}>{tr.name}</div><div style={{ fontSize: 12, color: '#6b7280' }}>${p.price.toFixed(2)}</div></> })()}
-                  </div>
-                ))}
+            {pairings.length > 0 && (
+              <div style={{ marginTop: 24 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 12 }}>{t('Recommended Pairings')}</div>
+                <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }} className="scrollbar-hide">
+                  {pairings.map(p => (
+                    <div key={p.item_id} style={{ minWidth: 160, background: '#f9fafb', borderRadius: 12, padding: 10, cursor: 'pointer' }}>
+                      <ImageWithFallback src={p.image_url} alt={p.name} style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 8 }} />
+                      {(() => { const tr = translateMenuItem(p.item_id, p.name, p.description); return <><div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginTop: 6 }}>{tr.name}</div><div style={{ fontSize: 12, color: '#6b7280' }}>${p.price.toFixed(2)}</div></> })()}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

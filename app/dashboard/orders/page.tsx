@@ -6,10 +6,17 @@ import { useCart } from '../../../lib/contexts'
 export default function OrdersPage() {
   const { orders } = useCart()
   const [localOrders, setLocalOrders] = useState(orders)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setLocalOrders(orders)
   }, [orders])
+
+  useEffect(() => {
+    // In a real app, you'd fetch orders from the API
+    // For now, we'll use the cart context
+    setLoading(false)
+  }, [])
 
   const statusColor = (s: string) => {
     switch(s) {
@@ -40,8 +47,10 @@ export default function OrdersPage() {
         <p style={{ fontSize: 14, color: '#6b7280', margin: '4px 0 0' }}>View and manage incoming orders in real-time.</p>
       </div>
       <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 20, overflow: 'hidden' }}>
-        {localOrders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#6b7280' }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: 60, color: '#6b7280' }}>Loading orders...</div>
+        ) : localOrders.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 60, color: '#6b7280' }}>
             <div style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', marginBottom: 4 }}>No orders yet</div>
             <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>Orders will appear here once customers place them</div>
           </div>
