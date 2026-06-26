@@ -1,4 +1,4 @@
-// File: /home/prakeya-shakthivel/Hackathon/MenuVerse-AI/app/page.tsx
+// File: C:\Users\Divya\OneDrive - Amrita Vishwa Vidyapeetham\Documents\MenuVerse-AI\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
