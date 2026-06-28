@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 
-// Store active SSE connections
-const clients = new Set<{
+interface SSEClient {
   restaurant_id: string
   event_type: string
   controller: ReadableStreamDefaultController
   cleanup?: () => void
-}>()
+}
+
+// Store active SSE connections
+const clients = new Set<SSEClient>()
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
     // Create a readable stream for SSE
     const stream = new ReadableStream({
       start(controller) {
-        const client = {
+        const client: SSEClient = {
           restaurant_id,
           event_type,
           controller
